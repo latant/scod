@@ -1,0 +1,17 @@
+{
+  "compilerOptions": {
+    "incremental": true,
+    "module": "commonjs",
+    "esModuleInterop": true,
+    "target": "ES2019",
+    "moduleResolution": "node",
+    "allowSyntheticDefaultImports": true,
+    "sourceMap": true,
+    "skipLibCheck": true,
+    "strict": true,
+    "outDir": "dist",
+    "noImplicitAny": true,
+    "resolveJsonModule": true,
+    "lib": ["ES2021.String"]
+  },
+}
