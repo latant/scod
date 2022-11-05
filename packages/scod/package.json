@@ -1,7 +1,8 @@
 {
   "name": "scod",
-  "version": "0.0.1",
-  "description": "",
+  "version": "0.0.0",
+  "description": "Simple Configuration of Dependencies",
+  "files": ["dist"],
   "main": "dist/index.js",
   "scripts": {
     "start": "nodemon",
@@ -9,8 +10,8 @@
     "test": "jest --runInBand",
     "version": "tsc --version"
   },
-  "author": "",
-  "license": "ISC",
+  "author": "Antal Latinovits",
+  "license": "MIT",
   "devDependencies": {
     "@types/jest": "^29.2.2",
     "@types/node": "^18.7.11",
