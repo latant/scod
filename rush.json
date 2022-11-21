@@ -3,6 +3,8 @@
   "rushVersion": "5.82.1",
   "pnpmVersion": "6.7.1",
   "nodeSupportedVersionRange": "18.12.1",
+  "projectFolderMaxDepth": 2,
+  "projectFolderMinDepth": 2,
   "repository": {
     "url": "https://github.com/latant/scod"
   },
