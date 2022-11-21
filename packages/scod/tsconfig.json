@@ -1,16 +1,20 @@
 {
   "compilerOptions": {
+    "strict": true,
     "incremental": true,
-    "module": "commonjs",
+    "module": "CommonJS",
     "esModuleInterop": true,
     "target": "ES2019",
     "moduleResolution": "node",
     "allowSyntheticDefaultImports": true,
     "skipLibCheck": true,
-    "strict": true,
     "outDir": "dist",
     "noImplicitAny": true,
     "resolveJsonModule": true,
-    "lib": ["ES2021.String"]
+    "declaration": true,
+    "declarationMap": true,
+    "lib": ["ES2021.String"],
+    "types": ["node", "jest"],
   },
+  "include": ["src/**/*"]
 }

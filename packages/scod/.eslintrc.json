@@ -1,0 +1,26 @@
+{
+  "extends": [
+    "eslint:recommended",
+    "plugin:@typescript-eslint/recommended"
+  ],
+  "parser": "@typescript-eslint/parser",
+  "plugins": ["@typescript-eslint"],
+  "env": {
+    "node": true,
+    "es6": true,
+    "jest": true
+  },
+  "parserOptions": {
+    "ecmaVersion": 6,
+    "sourceType": "module",
+    "project": ["tsconfig.json"]
+  },
+  "ignorePatterns": "*.js",
+  "rules": {
+    "semi": ["error", "always"],
+    "quotes": ["error", "double"],
+    "array-bracket-spacing": ["error", "never"],
+    "camelcase": "error",
+    "@typescript-eslint/no-floating-promises": "error"
+  }
+}

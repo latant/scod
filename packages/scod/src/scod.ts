@@ -1,8 +1,6 @@
+/* eslint-disable @typescript-eslint/ban-types */
 import { z } from "zod";
-
-// https://www.npmjs.com/package/json-schema-faker
-// https://www.npmjs.com/package/zod-to-json-schema
-// https://www.npmjs.com/package/yargs
+import { SameKeys } from "./util";
 
 type Val<T> = T[keyof T];
 type OrEmpty<D> = D extends {} ? D : {};
@@ -16,8 +14,8 @@ type Module<
   C extends Conf = any
 > = {
   name: N;
-  deps: D;
-  conf: C;
+  dependencies: D;
+  configuration: C;
   create: Factory<T, D, C>;
   resolve: ResolveModule<T, N, D, C>;
 };
@@ -27,8 +25,8 @@ type Deps = { [key: string]: Module };
 type Conf = Record<string, z.ZodType>;
 
 type Factory<T = any, D extends Deps = any, C extends Conf = any> = (
-  deps: Satisfied<D>,
-  conf: ConfigValue<C>
+  dependencies: Satisfied<D>,
+  configuration: ConfigValue<C>
 ) => Promise<T> | T;
 
 type ResolveModule<
@@ -52,18 +50,18 @@ type Satisfied<D extends Deps> = {
 
 type ConfigValue<C extends Conf> = { [K in keyof C]: z.infer<C[K]> };
 
-type ModuleOpts<N extends String> = {
+type ModuleOpts<N extends string> = {
   name: N;
-  deps?: Deps;
-  conf?: Conf;
+  dependencies?: Deps;
+  configuration?: Conf;
 };
 
-type Func<
+type Operation<
   D extends Deps = any,
   I extends Input = any,
   O extends Output = any
 > = {
-  deps: D;
+  dependencies: D;
   input: I;
   output: O;
   handle: Handler<D, I, O>;
@@ -89,27 +87,27 @@ type ResolveHandler<D extends Deps, I extends Input, O extends Output> = (
   ctx?: Context
 ) => Promise<(input: InputValue<I>) => Promise<OutputValue<O>>>;
 
-type FuncOpts = {
-  deps?: Deps;
+type OperationOpts = {
+  dependencies?: Deps;
   input?: Input;
   output?: Output;
 };
 
-type FuncMap = { [key: string]: Func };
+type Operations = { [key: string]: Operation };
 
-type FuncsConfig<M extends FuncMap> = Parameters<Val<M>["resolve"]>[0];
+type ApplicationConfig<M extends Operations> = Parameters<Val<M>["resolve"]>[0];
 
-type CallableFuncMap<M extends FuncMap> = {
+type CallableOperations<M extends Operations> = {
   [K in keyof M]: Awaited<ReturnType<M[K]["resolve"]>>;
 };
 
-type Funcs<M extends FuncMap> = {
-  functions: M;
-  resolve: (conf: FuncsConfig<M>, ctx?: Context) => Promise<CallableFuncMap<M>>;
-  lazy: (conf: Partial<FuncsConfig<M>>, ctx?: Context) => CallableFuncMap<M>;
+type Application<M extends Operations> = {
+  operations: M;
+  resolve: (conf: ApplicationConfig<M>, ctx?: Context) => Promise<CallableOperations<M>>;
+  lazy: (conf: Partial<ApplicationConfig<M>>, ctx?: Context) => CallableOperations<M>;
 };
 
-class Context {
+export class Context {
   private readonly resolved: { [key: string]: unknown } = {};
   async resolve<T>(
     module: Module<T>,
@@ -117,10 +115,10 @@ class Context {
   ): Promise<T> {
     if (!this.resolved[module.name]) {
       const satisfied: Deps = {};
-      for (const k in module.deps) {
-        satisfied[k] = await this.resolve(module.deps[k], conf);
+      for (const k in module.dependencies) {
+        satisfied[k] = await this.resolve(module.dependencies[k], conf);
       }
-      const confType = z.object({ [module.name]: module.conf });
+      const confType = z.object({ [module.name]: z.strictObject(module.configuration) });
       const config = confType.parse(conf)[module.name];
       this.resolved[module.name] = await module.create(satisfied, config);
     }
@@ -128,16 +126,16 @@ class Context {
   }
 }
 
-function module<
+export function defineModule<
   T,
   N extends string,
-  O extends ModuleOpts<N>,
-  M extends Module<T, O["name"], OrEmpty<O["deps"]>, OrEmpty<O["conf"]>>
+  O extends SameKeys<O, ModuleOpts<N>>,
+  M extends Module<T, O["name"], OrEmpty<O["dependencies"]>, OrEmpty<O["configuration"]>>
 >(opts: O, create: M["create"]): M {
   const result = {
     name: opts.name,
-    deps: opts.deps ?? {},
-    conf: opts.conf ?? {},
+    dependencies: opts.dependencies ?? {},
+    configuration: opts.configuration ?? {},
     create,
   } as Module;
   const resolve: M["resolve"] = (conf, ctx) =>
@@ -145,16 +143,16 @@ function module<
   return { ...result, resolve } as M;
 }
 
-function func<
-  O extends FuncOpts,
-  F extends Func<
-    OrEmpty<O["deps"]>,
+export function defineOperation<
+  O extends OperationOpts,
+  F extends Operation<
+    OrEmpty<O["dependencies"]>,
     OrEmpty<O["input"]>,
     OrZodVoid<O["output"]>
   >
 >(opts: O, handle: F["handle"]): F {
   const result = {
-    deps: opts.deps ?? {},
+    dependencies: opts.dependencies ?? {},
     input: opts.input ?? {},
     output: opts.output ?? z.void(),
     handle,
@@ -164,8 +162,8 @@ function func<
     const inputType = z.object(result.input);
     const outputType = result.output;
     const deps: Record<string, unknown> = {};
-    for (const k in result.deps) {
-      deps[k] = await context.resolve((opts.deps ?? {})[k], conf);
+    for (const k in result.dependencies) {
+      deps[k] = await context.resolve((result.dependencies as Deps)[k], conf);
     }
     return async (input) => {
       const output = await result.handle(
@@ -178,21 +176,25 @@ function func<
   return { ...result, resolve };
 }
 
-function funcs<M extends FuncMap>(functions: M): Funcs<M> {
+export function defineApplication<M extends Operations>(operations: M): Application<M> {
   const configMap: Record<string, z.ZodType> = {};
-  for (const k in functions) {
-    for (const m in functions[k].deps) {
-      configMap[m] = z.strictObject(functions[k].deps[m].conf);
+  const visitDeps = (deps: Deps) => {
+    for (const k in deps) {
+      configMap[k] = z.strictObject(deps[k].configuration);
+      visitDeps(deps[k].dependencies);
     }
+  };
+  for (const k in operations) {
+    visitDeps(operations[k].dependencies);
   }
   return {
-    functions,
+    operations: operations,
     resolve: async (conf, ctx) => {
       const context = ctx ?? new Context();
       const config = z.object(configMap).parse(conf);
       const result: Record<string, unknown> = {};
-      for (const k in functions) {
-        result[k] = await functions[k].resolve(config, context);
+      for (const k in operations) {
+        result[k] = await operations[k].resolve(config, context);
       }
       return result as any;
     },
@@ -200,9 +202,9 @@ function funcs<M extends FuncMap>(functions: M): Funcs<M> {
       const context = ctx ?? new Context();
       const config = z.object(configMap).partial().parse(conf);
       const result: Record<string, unknown> = {};
-      for (const k in functions) {
+      for (const k in operations) {
         result[k] = async (input: any) => {
-          const f = await functions[k].resolve(config, context);
+          const f = await operations[k].resolve(config, context);
           const output = await f(input);
           return output;
         };
@@ -211,92 +213,3 @@ function funcs<M extends FuncMap>(functions: M): Funcs<M> {
     },
   };
 }
-
-const a = module(
-  { name: "a", conf: { confA: z.string() } },
-  async (deps, conf) => (conf.confA === "9" ? 9 : 0)
-);
-
-a.resolve({
-  a: { confA: "" },
-});
-
-const b = module(
-  { name: "b", deps: { a }, conf: { confB: z.string() } },
-  async (deps) => deps.a % 2 === 0
-);
-
-b.resolve({
-  a: { confA: "" },
-  b: { confB: "" },
-});
-
-const c = module(
-  { name: "c", deps: { b }, conf: { confC: z.string() } },
-  async (deps) => deps.b + ""
-);
-
-c.resolve({
-  a: { confA: "" },
-  b: { confB: "" },
-  c: { confC: "" },
-});
-
-const d = module(
-  { name: "d", deps: { b, c } },
-  async (deps, conf) => new Date()
-);
-
-d.resolve({
-  a: { confA: "" },
-  b: { confB: "" },
-  c: { confC: "" },
-  d: { asd: 123 }, /// !!!
-});
-
-const dCreated = d.create(
-  {
-    b: true,
-    c: "",
-    a: 9,
-  },
-  {}
-);
-
-const f = func(
-  {
-    deps: { a },
-    input: {
-      arg0: z.string(),
-    },
-    output: z.string(),
-  },
-  (d, i) => {
-    console.log(d.a);
-    return i.arg0 + i.arg0;
-  }
-);
-
-const g = func(
-  {
-    deps: { b },
-  },
-  ({ b }) => {
-    console.log(b);
-  }
-);
-
-const fu = funcs({ f, g });
-//const fun = fu.resolve({});
-//fun.f({ arg0: "" });
-
-const m = { f, g };
-const mc: FuncsConfig<typeof m> = {
-  a: {
-    confA: "",
-  },
-  b: {
-    confB: "",
-  },
-};
-// TODO: generated cli
