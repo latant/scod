@@ -7,7 +7,8 @@
       "summary": "Test packages.",
       "description": "Executes automated tests.",
       "enableParallelism": true,
-      "incremental": true
+      "incremental": true,
+      "allowWarningsInSuccessfulBuild": true
     },
     {
       "commandKind": "bulk",
@@ -15,7 +16,8 @@
       "summary": "Lint packages.",
       "description": "Executes automated linting.",
       "enableParallelism": true,
-      "incremental": true
+      "incremental": true,
+      "allowWarningsInSuccessfulBuild": true
     }
   ],
   "parameters": []
