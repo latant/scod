@@ -2,5 +2,8 @@
   "eslint.workingDirectories": [
     "packages/scod",
     "packages/scod-cli",
-  ]
+  ],
+  "editor.codeActionsOnSave": {
+    "source.fixAll.eslint": true
+  }
 }

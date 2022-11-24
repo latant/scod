@@ -26,6 +26,9 @@
     "eslint": "8.20.0",
     "@typescript-eslint/eslint-plugin": "5.36.2",
     "@typescript-eslint/parser": "5.36.2",
+    "prettier": "2.6.2",
+    "eslint-plugin-prettier": "4.2.1",
+    "eslint-config-prettier": "8.5.0",
     "mkdirp": "1.0.4"
   }
 }

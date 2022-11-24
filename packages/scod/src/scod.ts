@@ -7,12 +7,7 @@ type OrEmpty<D> = D extends {} ? D : {};
 type OrZodVoid<D> = D extends z.ZodType ? D : z.ZodVoid;
 type AnyDeps<D extends Deps> = keyof (D & { 0: 0 }) extends 0 ? undefined : D;
 
-type Module<
-  T = any,
-  N extends string = any,
-  D extends Deps = any,
-  C extends Conf = any
-> = {
+type Module<T = any, N extends string = any, D extends Deps = any, C extends Conf = any> = {
   name: N;
   dependencies: D;
   configuration: C;
@@ -29,16 +24,12 @@ type Factory<T = any, D extends Deps = any, C extends Conf = any> = (
   configuration: ConfigValue<C>
 ) => Promise<T> | T;
 
-type ResolveModule<
-  T,
-  N extends string = any,
-  D extends Deps = any,
-  C extends Conf = any
-> = (config: ConfigMap<N, D, C>, ctx?: Context) => Promise<T>;
+type ResolveModule<T, N extends string = any, D extends Deps = any, C extends Conf = any> = (
+  config: ConfigMap<N, D, C>,
+  ctx?: Context
+) => Promise<T>;
 
-type DepsConfig<D extends Deps> = D extends AnyDeps<D>
-  ? Parameters<Val<D>["resolve"]>[0]
-  : {};
+type DepsConfig<D extends Deps> = D extends AnyDeps<D> ? Parameters<Val<D>["resolve"]>[0] : {};
 
 type ConfigMap<N extends string, D extends Deps, C extends Conf> = {
   [K in N]: ConfigValue<C>;
@@ -56,11 +47,7 @@ type ModuleOpts<N extends string> = {
   configuration?: Conf;
 };
 
-type Operation<
-  D extends Deps = any,
-  I extends Input = any,
-  O extends Output = any
-> = {
+type Operation<D extends Deps = any, I extends Input = any, O extends Output = any> = {
   dependencies: D;
   input: I;
   output: O;
@@ -73,11 +60,7 @@ type Output = z.ZodType;
 type InputValue<I extends Input> = { [K in keyof I]: z.infer<I[K]> };
 type OutputValue<O extends Output> = z.infer<O>;
 
-type Handler<
-  D extends Deps = any,
-  I extends Input = any,
-  O extends Output = any
-> = (
+type Handler<D extends Deps = any, I extends Input = any, O extends Output = any> = (
   deps: Satisfied<D>,
   input: InputValue<I>
 ) => Promise<z.infer<O>> | z.infer<O>;
@@ -109,10 +92,7 @@ type Application<M extends Operations> = {
 
 export class Context {
   private readonly resolved: { [key: string]: unknown } = {};
-  async resolve<T>(
-    module: Module<T>,
-    conf: Record<string, unknown>
-  ): Promise<T> {
+  async resolve<T>(module: Module<T>, conf: Record<string, unknown>): Promise<T> {
     if (!this.resolved[module.name]) {
       const satisfied: Deps = {};
       for (const k in module.dependencies) {
@@ -138,18 +118,13 @@ export function defineModule<
     configuration: opts.configuration ?? {},
     create,
   } as Module;
-  const resolve: M["resolve"] = (conf, ctx) =>
-    (ctx ?? new Context()).resolve(result, conf);
+  const resolve: M["resolve"] = (conf, ctx) => (ctx ?? new Context()).resolve(result, conf);
   return { ...result, resolve } as M;
 }
 
 export function defineOperation<
   O extends OperationOpts,
-  F extends Operation<
-    OrEmpty<O["dependencies"]>,
-    OrEmpty<O["input"]>,
-    OrZodVoid<O["output"]>
-  >
+  F extends Operation<OrEmpty<O["dependencies"]>, OrEmpty<O["input"]>, OrZodVoid<O["output"]>>
 >(opts: O, handle: F["handle"]): F {
   const result = {
     dependencies: opts.dependencies ?? {},
@@ -166,10 +141,7 @@ export function defineOperation<
       deps[k] = await context.resolve((result.dependencies as Deps)[k], conf);
     }
     return async (input) => {
-      const output = await result.handle(
-        deps as any,
-        inputType.parse(input) as any
-      );
+      const output = await result.handle(deps as any, inputType.parse(input) as any);
       return outputType.parse(output);
     };
   };
