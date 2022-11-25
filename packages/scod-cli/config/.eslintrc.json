@@ -1,5 +1,6 @@
 {
   "plugins": ["@typescript-eslint", "prettier"],
+  "ignorePatterns": "*.js",
   "extends": [
     "eslint:recommended",
     "plugin:@typescript-eslint/recommended",
@@ -9,7 +10,7 @@
   "parserOptions": {
     "ecmaVersion": 6,
     "sourceType": "module",
-    "project": ["tsconfig.json"]
+    "project": ["config/tsconfig.json"]
   },
   "env": {
     "node": true,

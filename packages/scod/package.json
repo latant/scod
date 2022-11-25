@@ -7,13 +7,13 @@
   "files": ["dist"],
   "main": "dist/scod.js",
   "scripts": {
-    "start": "nodemon",
-    "build": "tsc --project tsconfig.build.json",
-    "test": "jest --coverage",
-    "lint": "mkdirp lint && eslint src > lint/todo-common.lint.log"
+    "start": "nodemon --config config/nodemon.json",
+    "build": "tsc --project config/tsconfig.build.json",
+    "test": "(mkdirp cov && jest --config config/jest.config.json --coverage 2>&1) || (realpath cov/index.html && exit 1)",
+    "lint": "(mkdirp lint && eslint --config config/.eslintrc.json src > lint/lint.log) || (realpath lint/lint.log && exit 1)"
   },
   "dependencies": {
-    "zod": "^3.19.1"
+    "zod": "3.19.1"
   },
   "devDependencies": {
     "typescript": "4.8.4",
@@ -29,6 +29,7 @@
     "prettier": "2.6.2",
     "eslint-plugin-prettier": "4.2.1",
     "eslint-config-prettier": "8.5.0",
-    "mkdirp": "1.0.4"
+    "mkdirp": "1.0.4",
+    "fs.realpath": "1.0.0"
   }
 }

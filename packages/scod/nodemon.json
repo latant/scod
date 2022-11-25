@@ -1,5 +1,0 @@
-{
-  "watch": ["src", "tsconfig.json"],
-  "ext": "ts",
-  "exec": "jest --silent=false"
-}

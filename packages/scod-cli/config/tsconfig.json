@@ -1,0 +1,19 @@
+{
+  "compilerOptions": {
+    "incremental": true,
+    "module": "CommonJS",
+    "esModuleInterop": true,
+    "target": "ES2020",
+    "strict": true,
+    "noImplicitAny": true,
+    "moduleResolution": "node",
+    "allowSyntheticDefaultImports": true,
+    "declarationMap": true,
+    "declaration": true,
+    "skipLibCheck": true,
+    "outDir": "../dist",
+    "rootDir": "../src",
+    "types": ["jest"]
+  },
+  "include": ["../src/**/*"]
+}

@@ -1,0 +1,5 @@
+{
+  "watch": ["src", ".env", "config"],
+  "ext": "ts",
+  "exec": "tsc --project config/tsconfig.build.json && ts-node ./src/scodCli.ts"
+}

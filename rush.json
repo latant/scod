@@ -12,6 +12,10 @@
     {
       "packageName": "scod",
       "projectFolder": "packages/scod"
+    },
+    {
+      "packageName": "scod-cli",
+      "projectFolder": "packages/scod-cli"
     }
   ]
 }
