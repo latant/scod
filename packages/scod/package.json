@@ -4,8 +4,10 @@
   "description": "Simple Configuration of Dependencies",
   "author": "Antal Latinovits",
   "license": "MIT",
-  "files": ["dist"],
   "main": "dist/scod.js",
+  "types": "dist/scod.d.ts",
+  "files": ["dist"],
+  "keywords": ["simple", "dependencies", "dependency", "config", "confiuration", "scod", "module", "operation", "application"],
   "scripts": {
     "start": "nodemon --config config/nodemon.json",
     "build": "tsc --project config/tsconfig.build.json",

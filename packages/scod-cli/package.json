@@ -4,6 +4,9 @@
   "description": "",
   "private": true,
   "main": "dist/scodCli.js",
+  "types": "dist/scodCli.d.ts",
+  "files": ["dist"],
+  "keywords": ["simple", "dependencies", "dependency", "config", "confiuration", "scod", "module", "operation", "application", "cli", "command"],
   "scripts": {
     "start": "nodemon --config config/nodemon.json",
     "build": "tsc --project config/tsconfig.build.json",
