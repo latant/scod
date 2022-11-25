@@ -19,7 +19,7 @@ specifiers:
   ts-jest: 29.0.3
   ts-node: 10.9.1
   typescript: 4.8.4
-  zod: ^3.19.1
+  zod: 3.19.1
 
 dependencies:
   '@rush-temp/scod': file:projects/scod.tgz_@types+node@18.11.9
@@ -3201,7 +3201,7 @@ packages:
     dev: false
 
   file:projects/scod.tgz_@types+node@18.11.9:
-    resolution: {integrity: sha512-xHZMc6bxqthwkDZcsB9dWX2NkX0VrrDdaKTQXfVZmuowpD3cRs37r4C++vx+7i8ALsQqbfBYTYxNsRST+Kf1RA==, tarball: file:projects/scod.tgz}
+    resolution: {integrity: sha512-P3CQvyTte1qEdyS1nnd89GtXBJcaLNmyO4tWoHcTxz/HyVeJnK3go+w/H1OFn4mE73fV9S5dfJftHokg35lcAg==, tarball: file:projects/scod.tgz}
     id: file:projects/scod.tgz
     name: '@rush-temp/scod'
     version: 0.0.0
@@ -3212,6 +3212,7 @@ packages:
       eslint: 8.20.0
       eslint-config-prettier: 8.5.0_eslint@8.20.0
       eslint-plugin-prettier: 4.2.1_2b0e0b01b1e3f2b77264fbc05797f122
+      fs.realpath: 1.0.0
       jest: 29.3.1_70d4953900ede8d3dd438a81bd203eaa
       jest-junit: 14.0.1
       mkdirp: 1.0.4

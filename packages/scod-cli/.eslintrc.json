@@ -10,7 +10,7 @@
   "parserOptions": {
     "ecmaVersion": 6,
     "sourceType": "module",
-    "project": ["config/tsconfig.json"]
+    "project": ["tsconfig.json"]
   },
   "env": {
     "node": true,

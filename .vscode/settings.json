@@ -3,9 +3,6 @@
     "packages/scod",
     "packages/scod-cli",
   ],
-  "eslint.options": {
-    "overrideConfigFile": "config/.eslintrc.json"
-  },
   "editor.codeActionsOnSave": {
     "source.fixAll.eslint": true
   },

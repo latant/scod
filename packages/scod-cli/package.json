@@ -8,7 +8,7 @@
     "start": "nodemon --config config/nodemon.json",
     "build": "tsc --project config/tsconfig.build.json",
     "test": "(mkdirp cov && jest --config config/jest.config.json --coverage 2>&1) || (realpath cov/index.html && exit 1)",
-    "lint": "(mkdirp lint && eslint --config config/.eslintrc.json src > lint/lint.log) || (realpath lint/lint.log && exit 1)"
+    "lint": "(mkdirp lint && eslint src > lint/lint.log) || (realpath lint/lint.log && exit 1)"
   },
   "devDependencies": {
     "typescript": "4.8.4",
