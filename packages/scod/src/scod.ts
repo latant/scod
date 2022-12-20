@@ -1,10 +1,7 @@
 /* eslint-disable @typescript-eslint/ban-types */
 import { z } from "zod";
-import { SameKeys } from "./util";
+import { OrEmpty, OrZodVoid, SameKeys, UnionToIntersection, Val } from "./util";
 
-type Val<T> = T[keyof T];
-type OrEmpty<D> = D extends {} ? D : {};
-type OrZodVoid<D> = D extends z.ZodType ? D : z.ZodVoid;
 type AnyDeps<D extends Deps> = keyof (D & { 0: 0 }) extends 0 ? undefined : D;
 
 type Module<T = any, N extends string = any, D extends Deps = any, C extends Conf = any> = {
@@ -29,7 +26,9 @@ type ResolveModule<T, N extends string = any, D extends Deps = any, C extends Co
   ctx?: Context
 ) => Promise<T>;
 
-type DepsConfig<D extends Deps> = D extends AnyDeps<D> ? Parameters<Val<D>["resolve"]>[0] : {};
+type DepsConfig<D extends Deps> = D extends AnyDeps<D>
+  ? UnionToIntersection<Parameters<Val<D>["resolve"]>[0]>
+  : {};
 
 type ConfigMap<N extends string, D extends Deps, C extends Conf> = {
   [K in N]: ConfigValue<C>;

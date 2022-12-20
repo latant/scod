@@ -13,6 +13,35 @@ class Client {
 }
 
 describe("context tests", () => {
+  it("should work when there are two dependencies of a module", async () => {
+    const dep1 = defineModule(
+      {
+        name: "dep1",
+        configuration: { value: z.number() },
+      },
+      () => 1
+    );
+    const dep2 = defineModule(
+      {
+        name: "dep2",
+        configuration: { value: z.number() },
+      },
+      () => 2
+    );
+    const m = defineModule(
+      {
+        name: "m",
+        dependencies: { dep1, dep2 },
+      },
+      () => "m"
+    );
+    await m.resolve({
+      m: {},
+      dep1: { value: 0 },
+      dep2: { value: 1 },
+    });
+  });
+
   it("should work with a single module, function and application", async () => {
     let clientCalled = 0;
     const DRIVER = new Driver("secret");
